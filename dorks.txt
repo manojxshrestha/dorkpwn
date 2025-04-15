@@ -1,0 +1,125 @@
+# Login and Admin Pages
+site:*/sign-in
+site:*/account/login
+site:*/user/login
+inurl:wp-login.php
+inurl:/admin/login
+site:admin.*.com/signin/
+inurl:/sso/login
+inurl:/oauth/authorize
+
+# Directory Listing Vulnerabilities
+intitle:"index of" inurl:(/admin | /uploads | /backup)
+inurl:(/files | /data) intitle:"directory listing"
+
+# Exposed Configuration Files
+inurl:(.env | .config) intext:"password"
+inurl:(config.php | settings.php) intext:"db_"
+inurl:(.ini | .cfg) intext:"key"
+
+# Find WordPress
+inurl:wp-login.php
+inurl:/wp-json/wp/v2/users
+inurl:/wp-content/plugins
+inurl:wp-admin intext:"login"
+inurl:/wp-includes/ intext:"version"
+
+# Exposed Database Files
+inurl:(backup.sql | db.sql | dump.sql) -inurl:(download | free)
+inurl:(database.sql | mysql.sql) intext:"create table"
+
+# Exposed Log Files
+inurl:(.log | access.log | error.log) -inurl:(signup | login)
+inurl:(debug.log | app.log) intext:"error"
+
+# Backup and Old Files
+inurl:(.bak | .old | .backup) -inurl:(download | free)
+inurl:(index.php.bak | config.php.old) intext:"<?php"
+
+# SQL Errors
+inurl:(id= | pageid=) intext:"mysql error"
+intext:"sql syntax" inurl:(index.php | view.php)
+intext:"database error" inurl:(search.php | filter.php)
+
+# Publicly Exposed Documents
+inurl:(.pdf | .doc | .docx) intext:"confidential" -inurl:(signup | login)
+inurl:(/docs | /files) filetype:pdf intext:"internal"
+
+# phpinfo()
+inurl:phpinfo.php intext:"PHP Version"
+inurl:(info.php | test.php) intext:"phpinfo()"
+
+# Finding Backdoors
+inurl:(shell.php | backdoor.php | cmd.php)
+inurl:(adminer.php | phpmyadmin) intext:"login"
+
+# Install/Open Redirect Files
+inurl:(redirect= | url= | next=) intext:"click here"
+inurl:(goto= | return=) -inurl:(signup | login)
+
+# Apache STRUTS RCE
+inurl:(.action | .do) intext:"struts"
+inurl:/struts2 intext:"apache"
+
+# Find Pastebin Entries
+site:pastebin.com intext:"api_key" -inurl:(signup | login)
+site:pastebin.com intext:"password" inurl:(raw)
+
+# Employees on LinkedIn
+site:linkedin.com intext:"@site.com" intext:"employee"
+site:linkedin.com/company intext:"site.com"
+
+# .htaccess Sensitive Files
+inurl:.htaccess intext:"RewriteRule"
+inurl:.htaccess intext:"AuthUserFile"
+
+# Find Subdomains and SUB-Subdomains
+site:*.site.com -inurl:(www.site.com)
+site:*.*.site.com -inurl:(www.site.com)
+
+# Search in GitHub
+site:github.com intext:"site.com" intext:"api_key"
+site:github.com intext:"site.com" intext:".env"
+
+# Search in OpenBugBounty (mimic intent)
+site:openbugbounty.org intext:"site.com"
+
+# Search in Reddit
+site:reddit.com intext:"site.com" intext:"vulnerability"
+site:reddit.com intext:"site.com" intext:"leak"
+
+# Test CrossDomain
+inurl:crossdomain.xml intext:"allow-access-from"
+inurl:clientaccesspolicy.xml intext:"domain"
+
+# Check in ThreatCrowd (mimic intent)
+intext:"threatcrowd" intext:"site.com"
+
+# Find .SWF File (Google, Yandex, Wayback)
+filetype:swf inurl:(site.com)
+inurl:(.swf) site:*.site.com -inurl:(signup | login)
+
+# Search in Wayback Machine
+inurl:archive.org intext:"site.com" inurl:wp-login
+inurl:archive.org intext:"site.com" inurl:.env
+inurl:archive.org intext:"site.com" inurl:config
+
+# Check in crt.sh (mimic intent)
+intext:"crt.sh" intext:"site.com"
+
+# Check in Censys [IP4] [DOMAINS] [CERTS] (mimic intent)
+intext:"censys.io" intext:"site.com"
+inurl:(ip | domain) intext:"site.com" intext:"certificate"
+
+# Search in Shodan (mimic intent)
+intext:"shodan.io" intext:"site.com"
+intext:"http.title" intext:"site.com"
+
+# Existing Bug Hunter Dorks (Kept)
+inurl:(search= | q= | query=) # XSS
+intext:"api_key=" -inurl:(signup | login) # Secrets
+intext:"eyJhbGciOiJIUzI1NiJ9" inurl:(.js | .json) # JWT
+inurl:(swagger | openapi) intext:"api_key" # APIs
+site:*.amazonaws.com inurl:(api | login) # Cloud
+inurl:/strapi/admin # Modern CMS
+inurl:/prometheus/graph # Monitoring
